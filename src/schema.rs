@@ -1,4 +1,13 @@
 table! {
+    attachment (id) {
+        id -> Int8,
+        id_laporan -> Uuid,
+        nama_file -> Varchar,
+        data -> Bytea,
+    }
+}
+
+table! {
     laporan (id) {
         id -> Uuid,
         created_date -> Timestamptz,
@@ -57,6 +66,7 @@ joinable!(laporan -> satuan_kerja (satker_id));
 joinable!(pelapor -> satuan_kerja (satker_id));
 
 allow_tables_to_appear_in_same_query!(
+    attachment,
     laporan,
     pelapor,
     referensi,
