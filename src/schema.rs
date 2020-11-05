@@ -1,6 +1,6 @@
 table! {
     attachment (id) {
-        id -> Int8,
+        id -> Int4,
         id_laporan -> Uuid,
         nama_file -> Varchar,
         data -> Bytea,
