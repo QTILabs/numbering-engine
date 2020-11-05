@@ -23,6 +23,7 @@ table! {
         uploader_id -> Int4,
         updated_by_id -> Nullable<Int4>,
         jenis_id -> Int4,
+        tanggal_laporan -> Timestamptz,
     }
 }
 
