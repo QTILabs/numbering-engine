@@ -42,7 +42,7 @@ async fn post_laporan() -> impl Responder {
 }
 
 #[put("/v3/laporan/{id}/")]
-async fn put_laporan(id: web::Path<i32>) -> impl Responder {
+async fn put_laporan(id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
@@ -57,7 +57,7 @@ async fn put_laporan(id: web::Path<i32>) -> impl Responder {
 }
 
 #[delete("/v3/laporan/{id}/")]
-async fn delete_laporan(id: web::Path<i32>) -> impl Responder {
+async fn delete_laporan(id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
