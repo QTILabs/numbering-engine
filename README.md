@@ -5,6 +5,10 @@ This is a prototype repo for chaotic numbering engine using [PosgreSQL](https://
 ## Contributors
 
 - [Aditya Kresna](https://github.com/Ujang360)
+- [Alli Sandrana](https://github.com/allisandrana)
+- [BimaAdi](https://github.com/BimaAdi)
+- [izuleon](https://github.com/izuleon)
+- [yosiasm](https://github.com/yosiasm)
 
 ## License
 
