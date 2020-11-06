@@ -15,7 +15,7 @@ async fn get_all_laporan() -> impl Responder {
 }
 
 #[get("/v3/laporan/{id}/")]
-async fn get_laporan(id: web::Path<i32>) -> impl Responder {
+async fn get_laporan(id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
