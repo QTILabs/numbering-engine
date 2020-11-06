@@ -1,5 +1,10 @@
 -- Your SQL goes here
-CREATE TYPE Laporan_status AS ENUM ('Draft', 'Terhapus', 'Terkirim & Belum Di Approve', 'Terkirim & Sudah Di Approve');
+CREATE TYPE Laporan_status AS ENUM (
+    'Draft',
+    'Terhapus',
+    'Terkirim & Belum Di Approve',
+    'Terkirim & Sudah Di Approve'
+);
 
 CREATE TABLE public.attachment (
     id serial PRIMARY KEY,
