@@ -1,8 +1,8 @@
 -- Counting Laporan for Numbering
-CREATE OR REPLACE FUNCTION sp_laporan_count_nomor(_id_jenis int, _id_satker int, _tanggal_laporan timestamp)
+CREATE OR REPLACE FUNCTION sp_laporan_count_month(_id_jenis int, _id_satker int, _month integer, _year integer)
 RETURNS INTEGER AS $$
 BEGIN
-	RETURN (SELECT COUNT(*) AS count FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND tanggal_laporan >= date_trunc('month', _tanggal_laporan) AND tanggal_laporan < date_trunc('month', _tanggal_laporan + interval '1' month));
+	RETURN (SELECT COUNT(*) AS count FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = _month AND EXTRACT(YEAR FROM tanggal_laporan) = _year);
 END
 $$ LANGUAGE plpgsql;
 
