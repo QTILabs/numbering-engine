@@ -1,5 +1,6 @@
 use crate::common::auth;
 use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
+use uuid::Uuid;
 
 #[get("/v3/laporan/")]
 async fn get_all_laporan() -> impl Responder {
