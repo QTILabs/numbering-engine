@@ -6,9 +6,9 @@ This is a prototype repo for chaotic numbering engine using [PosgreSQL](https://
 
 - [Aditya Kresna](https://github.com/Ujang360)
 - [Alli Sandrana](https://github.com/allisandrana)
-- [BimaAdi](https://github.com/BimaAdi)
-- [izuleon](https://github.com/izuleon)
-- [yosiasm](https://github.com/yosiasm)
+- [Muhammad Bima Adi Prabowo](https://github.com/BimaAdi)
+- [Muhammad Zulfikar](https://github.com/izuleon)
+- [Yosias Suparno](https://github.com/yosiasm)
 
 ## License
 
