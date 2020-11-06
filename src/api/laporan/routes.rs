@@ -1,9 +1,8 @@
-use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 use crate::common::auth;
+use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 
 #[get("/v3/laporan/")]
 async fn get_all_laporan() -> impl Responder {
-
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
@@ -16,26 +15,21 @@ async fn get_all_laporan() -> impl Responder {
 
 #[get("/v3/laporan/{id}/")]
 async fn get_laporan(id: web::Path<i32>) -> impl Responder {
-
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
     if is_token_valid == true {
-
         let id_string = id.to_string();
         let mut message = "get v3 laporan id: ".to_string();
         message.push_str(&id_string);
         HttpResponse::Ok().body(message)
-
     } else {
         HttpResponse::Unauthorized().body("unauthorized")
     }
-    
 }
 
 #[post("/v3/laporan/")]
 async fn post_laporan() -> impl Responder {
-
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
@@ -48,17 +42,14 @@ async fn post_laporan() -> impl Responder {
 
 #[put("/v3/laporan/{id}/")]
 async fn put_laporan(id: web::Path<i32>) -> impl Responder {
-    
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
     if is_token_valid == true {
-
         let id_string = id.to_string();
         let mut message = "put v3 laporan id: ".to_string();
         message.push_str(&id_string);
         HttpResponse::Ok().body(message)
-
     } else {
         HttpResponse::Unauthorized().body("unauthorized")
     }
@@ -66,17 +57,14 @@ async fn put_laporan(id: web::Path<i32>) -> impl Responder {
 
 #[delete("/v3/laporan/{id}/")]
 async fn delete_laporan(id: web::Path<i32>) -> impl Responder {
-    
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
     if is_token_valid == true {
-
         let id_string = id.to_string();
         let mut message = "delete v3 laporan id: ".to_string();
         message.push_str(&id_string);
         HttpResponse::Ok().body(message)
-
     } else {
         HttpResponse::Unauthorized().body("unauthorized")
     }
