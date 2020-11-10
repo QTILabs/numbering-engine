@@ -7,6 +7,7 @@ async fn get_all_laporan() -> impl Responder {
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
+
     if is_token_valid == true {
         HttpResponse::Ok().body("get all v3 laporan")
     } else {
@@ -19,6 +20,7 @@ async fn get_laporan(id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
+
     if is_token_valid == true {
         let id_string = id.to_string();
         let mut message = "get v3 laporan id: ".to_string();
@@ -34,6 +36,7 @@ async fn post_laporan() -> impl Responder {
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
+
     if is_token_valid == true {
         HttpResponse::Ok().body("post v3 laporan")
     } else {
@@ -46,6 +49,7 @@ async fn put_laporan(id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
+
     if is_token_valid == true {
         let id_string = id.to_string();
         let mut message = "put v3 laporan id: ".to_string();
@@ -61,6 +65,7 @@ async fn delete_laporan(id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
     let is_token_valid = auth::validate_jwt_token(token);
+
     if is_token_valid == true {
         let id_string = id.to_string();
         let mut message = "delete v3 laporan id: ".to_string();
