@@ -36,6 +36,7 @@ pub(crate) fn authenticate_user(user_jwt: &str, satker: &str) -> AuthResult {
         let correct_satker = intended_satker.clone().into();
         return AuthResult::ForbiddenAccess(requested_satker,correct_satker);
     };
+    
     AuthResult::Ok
 }
 
@@ -52,6 +53,7 @@ impl AuthProcessor {
         let nodes = vec![format!("redis://{}:{}/10",hostname,port)];
         let redis_jwt_client = ClusterClient::open(nodes).unwrap();
         let redis_jwt = redis_jwt_client.get_connection().unwrap();
+        
         Self {
             redis_key,
             redis_jwt,
@@ -64,23 +66,28 @@ impl AuthProcessor {
 
 }
 fn is_token_satker_correct(the_satker:&str,intended_satker:&str) -> bool{
-    if(the_satker == ""){
-        return false
+    if the_satker == "" {
+        return false;
     }
-    if(intended_satker == ""){
-        return false
+    
+    if intended_satker == "" {
+        return false;
     }
-    if(intended_satker != intended_satker){
-        return false
+    
+    if intended_satker != intended_satker {
+        return false;
     }
+    
     true
 }
+
 fn is_token_expired(the_date:&DateTime<FixedOffset>)-> bool{
     if the_date > &Utc::now(){
         return false
     }
     true
 }
-fn is_token_value_correct(the_value:&str)->bool{
+
+fn is_token_value_correct(the_value:&str) -> bool {
     true
 }
