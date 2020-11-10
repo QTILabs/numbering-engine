@@ -3,6 +3,8 @@ use chrono::{DateTime, FixedOffset, Utc};
 use jsonwebtoken::{decode, encode, errors, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use redis::{cluster::ClusterClient, Client, Commands, Connection};
 use serde::{Deserialize, Serialize};
+use std::sync::Mutex;
+
 /// Our claims struct, it needs to derive `Serialize` and/or `Deserialize`
 /// Disini masukan field yang akan diterima dalam token apa saja untuk laporan
 #[derive(Debug, Serialize, Deserialize)]
@@ -27,12 +29,12 @@ pub fn decode_from_jwt(token: String) -> Result<TokenData<Claims>, errors::Error
 }
 
 pub(crate) struct AuthProcessor {
-    redis_key: redis::cluster::ClusterConnection,
-    redis_jwt: redis::cluster::ClusterConnection,
+    redis_key: Option<Mutex<redis::cluster::ClusterConnection>>,
+    redis_jwt: Option<Mutex<redis::cluster::ClusterConnection>>,
 }
 
 impl AuthProcessor {
-    pub(crate) fn create_new(hostname: &str, port: u16) -> Self {
+    pub(crate) fn new(hostname: &str, port: u16) -> Self {
         let nodes = vec![format!("redis://{}:{}/9", hostname, port)];
         let redis_key_client = ClusterClient::open(nodes).unwrap();
         let redis_key = redis_key_client.get_connection().unwrap();
@@ -40,7 +42,10 @@ impl AuthProcessor {
         let redis_jwt_client = ClusterClient::open(nodes).unwrap();
         let redis_jwt = redis_jwt_client.get_connection().unwrap();
 
-        Self { redis_key, redis_jwt }
+        Self {
+            redis_key: None,
+            redis_jwt: None,
+        }
     }
 
     pub(crate) fn authenticate_user(&mut self, token: &str, inputted_satker: &str) -> AuthResult {

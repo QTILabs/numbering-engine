@@ -1,4 +1,6 @@
 use crate::common::auth;
+use crate::common::jwt_laporan::AuthProcessor;
+use actix_web::web::Data as WebData;
 use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 use uuid::Uuid;
 
@@ -74,6 +76,10 @@ async fn delete_laporan(id: web::Path<Uuid>) -> impl Responder {
     } else {
         HttpResponse::Unauthorized().body("unauthorized")
     }
+}
+
+pub(crate) fn get_shared_auth() -> WebData<AuthProcessor> {
+    WebData::new(AuthProcessor::new("127.0.0.1", 6379))
 }
 
 pub fn init(cfg: &mut web::ServiceConfig) {
