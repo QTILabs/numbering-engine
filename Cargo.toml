@@ -1,7 +1,7 @@
 [package]
 name = "numbering-engine"
 version = "0.1.0"
-authors = ["Aditya Kresna <aditya.kresna@outlook.co.id>"]
+authors = ["Aditya Kresna <aditya.kresna@outlook.co.id>", "Muhammad Bima Adi Prabowo <bimaadi419@gmail.com>"]
 edition = "2018"
 
 [dependencies]
