@@ -6,31 +6,56 @@ use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 use uuid::Uuid;
 
 #[get("/v3/laporan/")]
-async fn get_all_laporan() -> impl Responder {
+async fn get_all_laporan(shared_auth: WebData<AuthProcessor>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
-    let is_token_valid = auth::validate_jwt_token(token);
+    // let is_token_valid = auth::validate_jwt_token(token);
+    let satker = "".to_string();
 
-    if is_token_valid == true {
-        HttpResponse::Ok().body("get all v3 laporan")
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    match shared_auth.authenticate_user(&token, &satker) {
+        AuthResult::Ok => HttpResponse::Ok().body("POST Success! The ID is...").await,
+        AuthResult::NotAuthenticated => HttpResponse::Unauthorized().body("You're not authenticated").await,
+        AuthResult::TokenInvalid => HttpResponse::Ok().body("Your JWT token is invalid").await,
+        AuthResult::TokenExpired(_expiry_date) => {
+            HttpResponse::Unauthorized()
+                .body("You're not authenticated, token expired!")
+                .await
+        }
+        AuthResult::ForbiddenAccess(current_satker, expected_satker) => {
+            HttpResponse::Unauthorized()
+                .body(format!(
+                    "Invalid Satker, expected {} and you're in {}!",
+                    current_satker, expected_satker
+                ))
+                .await
+        }
     }
 }
 
 #[get("/v3/laporan/{id}/")]
-async fn get_laporan(id: web::Path<Uuid>) -> impl Responder {
+async fn get_laporan(shared_auth: WebData<AuthProcessor>, id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
-    let is_token_valid = auth::validate_jwt_token(token);
+    // let is_token_valid = auth::validate_jwt_token(token);
+    let satker = "".to_string();
 
-    if is_token_valid == true {
-        let id_string = id.to_string();
-        let mut message = "get v3 laporan id: ".to_string();
-        message.push_str(&id_string);
-        HttpResponse::Ok().body(message)
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    match shared_auth.authenticate_user(&token, &satker) {
+        AuthResult::Ok => HttpResponse::Ok().body("POST Success! The ID is...").await,
+        AuthResult::NotAuthenticated => HttpResponse::Unauthorized().body("You're not authenticated").await,
+        AuthResult::TokenInvalid => HttpResponse::Ok().body("Your JWT token is invalid").await,
+        AuthResult::TokenExpired(_expiry_date) => {
+            HttpResponse::Unauthorized()
+                .body("You're not authenticated, token expired!")
+                .await
+        }
+        AuthResult::ForbiddenAccess(current_satker, expected_satker) => {
+            HttpResponse::Unauthorized()
+                .body(format!(
+                    "Invalid Satker, expected {} and you're in {}!",
+                    current_satker, expected_satker
+                ))
+                .await
+        }
     }
 }
 
@@ -61,34 +86,56 @@ async fn post_laporan(shared_auth: WebData<AuthProcessor>) -> impl Responder {
 }
 
 #[put("/v3/laporan/{id}/")]
-async fn put_laporan(id: web::Path<Uuid>) -> impl Responder {
+async fn put_laporan(shared_auth: WebData<AuthProcessor>, id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
-    let is_token_valid = auth::validate_jwt_token(token);
+    // let is_token_valid = auth::validate_jwt_token(token);
+    let satker = "".to_string();
 
-    if is_token_valid == true {
-        let id_string = id.to_string();
-        let mut message = "put v3 laporan id: ".to_string();
-        message.push_str(&id_string);
-        HttpResponse::Ok().body(message)
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    match shared_auth.authenticate_user(&token, &satker) {
+        AuthResult::Ok => HttpResponse::Ok().body("POST Success! The ID is...").await,
+        AuthResult::NotAuthenticated => HttpResponse::Unauthorized().body("You're not authenticated").await,
+        AuthResult::TokenInvalid => HttpResponse::Ok().body("Your JWT token is invalid").await,
+        AuthResult::TokenExpired(_expiry_date) => {
+            HttpResponse::Unauthorized()
+                .body("You're not authenticated, token expired!")
+                .await
+        }
+        AuthResult::ForbiddenAccess(current_satker, expected_satker) => {
+            HttpResponse::Unauthorized()
+                .body(format!(
+                    "Invalid Satker, expected {} and you're in {}!",
+                    current_satker, expected_satker
+                ))
+                .await
+        }
     }
 }
 
 #[delete("/v3/laporan/{id}/")]
-async fn delete_laporan(id: web::Path<Uuid>) -> impl Responder {
+async fn delete_laporan(shared_auth: WebData<AuthProcessor>, id: web::Path<Uuid>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
-    let is_token_valid = auth::validate_jwt_token(token);
+    // let is_token_valid = auth::validate_jwt_token(token);
+    let satker = "".to_string();
 
-    if is_token_valid == true {
-        let id_string = id.to_string();
-        let mut message = "delete v3 laporan id: ".to_string();
-        message.push_str(&id_string);
-        HttpResponse::Ok().body(message)
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    match shared_auth.authenticate_user(&token, &satker) {
+        AuthResult::Ok => HttpResponse::Ok().body("POST Success! The ID is...").await,
+        AuthResult::NotAuthenticated => HttpResponse::Unauthorized().body("You're not authenticated").await,
+        AuthResult::TokenInvalid => HttpResponse::Ok().body("Your JWT token is invalid").await,
+        AuthResult::TokenExpired(_expiry_date) => {
+            HttpResponse::Unauthorized()
+                .body("You're not authenticated, token expired!")
+                .await
+        }
+        AuthResult::ForbiddenAccess(current_satker, expected_satker) => {
+            HttpResponse::Unauthorized()
+                .body(format!(
+                    "Invalid Satker, expected {} and you're in {}!",
+                    current_satker, expected_satker
+                ))
+                .await
+        }
     }
 }
 
