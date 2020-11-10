@@ -25,34 +25,6 @@ pub fn decode_from_jwt(token: String) -> Result<TokenData<Claims>, errors::Error
     let decoded = decode::<Claims>(&token, &DecodingKey::from_secret(key), &Validation::new(Algorithm::HS512))?;
     Ok(decoded)
 }
-pub(crate) fn authenticate_user(user_jwt: &str, satker: &str) -> AuthResult {
-    let current_time: DateTime<FixedOffset> = Utc::now().into();
-    //TODO: get key from redis DB 9
-    //TODO: get jwt from redis DB 10
-    //TODO: check validity (token exist? token value equal? token expired? satker correct?)
-    let token = "the true only token";
-    let alldata = token;
-    let jwtdate: DateTime<FixedOffset> = Utc::now().into();
-    let jwtsatker = token;
-    let intended_satker = token;
-
-    if is_token_value_correct(&alldata) {
-        return AuthResult::TokenInvalid;
-    };
-
-    if is_token_expired(&jwtdate) {
-        let tanggal_expired: DateTime<FixedOffset> = jwtdate.clone();
-        return AuthResult::TokenExpired(tanggal_expired);
-    };
-
-    if is_token_satker_correct(&jwtsatker, &intended_satker) {
-        let requested_satker = jwtsatker.clone().into();
-        let correct_satker = intended_satker.clone().into();
-        return AuthResult::ForbiddenAccess(requested_satker, correct_satker);
-    };
-
-    AuthResult::Ok
-}
 
 pub(crate) struct AuthProcessor {
     redis_key: redis::cluster::ClusterConnection,
@@ -71,8 +43,38 @@ impl AuthProcessor {
         Self { redis_key, redis_jwt }
     }
 
-    pub(crate) fn authenticate_user(&mut self) {}
+    pub(crate) fn authenticate_user(&mut self, token: &str, inputted_satker: &str) -> AuthResult {
+        let current_time: DateTime<FixedOffset> = Utc::now().into();
+        //TODO: get key from redis DB 9
+        //TODO: get jwt from redis DB 10
+        //TODO: check validity (token exist? token value equal? token expired? satker correct?)
+        //TODO: alldata adalah placeholder extraksi dari jwt
+        //TODO: jwtdate adalah placeholder extraksi dari jwt dapat tanggal expire jwtnya
+        //TODO: jwtsatker adalah placeholder extraksi dari jwt dapat satker yg ada dalam jwt
+        let alldata = "";
+        let jwtdate = current_time;
+        let jwtsatker = "";
+        let intended_satker = inputted_satker;
+
+        if is_token_value_correct(&alldata) {
+            return AuthResult::TokenInvalid;
+        };
+
+        if is_token_expired(&jwtdate) {
+            let tanggal_expired: DateTime<FixedOffset> = jwtdate.clone();
+            return AuthResult::TokenExpired(tanggal_expired);
+        };
+
+        if is_token_satker_correct(&jwtsatker, &intended_satker) {
+            let requested_satker = jwtsatker.clone().into();
+            let correct_satker = intended_satker.clone().into();
+            return AuthResult::ForbiddenAccess(requested_satker, correct_satker);
+        };
+
+        AuthResult::Ok
+    }
 }
+
 fn is_token_satker_correct(the_satker: &str, intended_satker: &str) -> bool {
     if the_satker == "" {
         return false;
