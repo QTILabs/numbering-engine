@@ -25,10 +25,12 @@ pub(crate) fn authenticate_user(user_jwt: &str, satker: &str) -> AuthResult {
     if is_token_value_correct(&alldata){
         return AuthResult::TokenInvalid;
     };
+    
     if is_token_expired(&jwtdate) {
         let tanggal_expired:DateTime<FixedOffset> = jwtdate.clone();
         return AuthResult::TokenExpired(tanggal_expired);
     };
+    
     if is_token_satker_correct(&jwtsatker,&intended_satker){
         let requested_satker = jwtsatker.clone().into();
         let correct_satker = intended_satker.clone().into();
