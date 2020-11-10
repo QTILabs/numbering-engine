@@ -48,7 +48,7 @@ impl AuthProcessor {
         }
     }
 
-    pub(crate) fn authenticate_user(&mut self, token: &str, inputted_satker: &str) -> AuthResult {
+    pub(crate) fn authenticate_user(&self, token: &str, inputted_satker: &str) -> AuthResult {
         let current_time: DateTime<FixedOffset> = Utc::now().into();
         //TODO: get key from redis DB 9
         //TODO: get jwt from redis DB 10

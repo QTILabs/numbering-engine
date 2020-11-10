@@ -1,5 +1,6 @@
 use crate::common::auth;
 use crate::common::jwt_laporan::AuthProcessor;
+use crate::common::AuthResult;
 use actix_web::web::Data as WebData;
 use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 use uuid::Uuid;
@@ -34,15 +35,28 @@ async fn get_laporan(id: web::Path<Uuid>) -> impl Responder {
 }
 
 #[post("/v3/laporan/")]
-async fn post_laporan() -> impl Responder {
+async fn post_laporan(shared_auth: WebData<AuthProcessor>) -> impl Responder {
     // token validation
     let token = "sample token".to_string();
-    let is_token_valid = auth::validate_jwt_token(token);
+    let satker = "".to_string();
 
-    if is_token_valid == true {
-        HttpResponse::Ok().body("post v3 laporan")
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    match shared_auth.authenticate_user(&token, &satker) {
+        AuthResult::Ok => HttpResponse::Ok().body("POST Success! The ID is...").await,
+        AuthResult::NotAuthenticated => HttpResponse::Unauthorized().body("You're not authenticated").await,
+        AuthResult::TokenInvalid => HttpResponse::Ok().body("Your JWT token is invalid").await,
+        AuthResult::TokenExpired(_expiry_date) => {
+            HttpResponse::Unauthorized()
+                .body("You're not authenticated, token expired!")
+                .await
+        }
+        AuthResult::ForbiddenAccess(current_satker, expected_satker) => {
+            HttpResponse::Unauthorized()
+                .body(format!(
+                    "Invalid Satker, expected {} and you're in {}!",
+                    current_satker, expected_satker
+                ))
+                .await
+        }
     }
 }
 

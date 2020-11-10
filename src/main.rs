@@ -6,7 +6,6 @@ pub(crate) mod config;
 pub(crate) mod db;
 pub(crate) mod endpoint;
 
-use crate::common::jwt_laporan;
 use crate::config::AppConfig;
 use crate::endpoint::route_handler::{get_shared_auth, init as init_handler};
 use actix_web::{middleware, App, HttpServer};
