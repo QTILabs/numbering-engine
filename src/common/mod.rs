@@ -1,7 +1,8 @@
 pub(crate) mod auth;
 pub(crate) mod jwt_laporan;
 pub(crate) mod redis_helper;
-use chrono::{DateTime, FixedOffset, Utc};
+
+use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
