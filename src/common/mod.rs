@@ -50,13 +50,22 @@ pub(crate) enum LaporanStatus {
 impl IJsonSerializable for LaporanStatus {}
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
+pub(crate) struct LaporanAttachment {
+    pub(crate) id: u32,
+    pub(crate) nama_file: String,
+    pub(crate) data: Vec<u8>,
+}
+
+impl IJsonSerializable for LaporanAttachment {}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub(crate) struct Laporan {
-    pub(crate) id: IdLaporan,
+    pub(crate) id: Option<IdLaporan>,
     pub(crate) created_date: DateTime<FixedOffset>,
-    pub(crate) updated_date: DateTime<FixedOffset>,
+    pub(crate) updated_date: Option<DateTime<FixedOffset>>,
     pub(crate) judul: String,
-    pub(crate) nomor: NomorLaporan,
-    pub(crate) urutan: u32,
+    pub(crate) nomor: Option<NomorLaporan>,
+    pub(crate) urutan: Option<u32>,
     pub(crate) isi: String,
     pub(crate) status: LaporanStatus,
     pub(crate) satker_id: u32,
@@ -66,7 +75,7 @@ pub(crate) struct Laporan {
     pub(crate) uploader_id: u32,
     pub(crate) jenis_id: u32,
     pub(crate) tanggal_laporan: DateTime<FixedOffset>,
-    pub(crate) attachment: Vec<u8>,
+    pub(crate) attachment: Option<LaporanAttachment>,
 }
 
 impl IJsonSerializable for Laporan {}
