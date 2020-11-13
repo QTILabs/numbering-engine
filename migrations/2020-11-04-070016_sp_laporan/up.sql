@@ -56,11 +56,10 @@ END
 $$ LANGUAGE plpgsql;
 
 -- Sort Nomor
-CREATE OR REPLACE FUNCTION sp_laporan_sort_nomor(_id_jenis int, _id_satker int, _tanggal_laporan timestamp)
+CREATE OR REPLACE FUNCTION sp_laporan_sort_nomor(num_count int, _id_jenis int, _id_satker int, _tanggal_laporan timestamp)
 RETURNS RECORD AS $$
-DECLARE
+DECLARE	
 	data_laporan record;
-	num_count int := sp_laporan_get_nomor_position(_id_jenis,_id_satker,_tanggal_laporan) + 1;
 BEGIN
 	FOR data_laporan IN SELECT * FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = EXTRACT(MONTH FROM _tanggal_laporan) AND EXTRACT(YEAR FROM tanggal_laporan) = EXTRACT(YEAR FROM _tanggal_laporan) AND tanggal_laporan > _tanggal_laporan ORDER BY tanggal_laporan ASC LOOP
 		UPDATE laporan SET nomor = sp_laporan_get_nomor(num_count,sp_laporan_get_kode_satker(_id_satker),sp_laporan_get_kode_referensi(_id_jenis),data_laporan.tanggal_laporan) WHERE id = data_laporan.id;

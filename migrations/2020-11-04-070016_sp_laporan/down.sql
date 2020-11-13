@@ -18,6 +18,7 @@ DROP FUNCTION IF EXISTS sp_laporan_get_nomor_position(
     _tanggal_laporan timestamp
 );
 DROP FUNCTION IF EXISTS sp_laporan_sort_nomor(
+    num_count int,
     _id_jenis int,
     _id_satker int,
     _tanggal_laporan timestamp
