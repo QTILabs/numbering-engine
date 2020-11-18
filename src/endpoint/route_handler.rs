@@ -11,7 +11,8 @@ async fn get_all_laporan(req: HttpRequest) -> impl Responder {
     };
 
     // token validation
-    let is_token_valid = auth::validate_jwt_token(authorize_token.to_string());
+    let token = "sample token";
+    let is_token_valid = auth::validate_jwt_token(token);
 
     if is_token_valid == true {
         HttpResponse::Ok().body("get all v3 laporan")
@@ -29,7 +30,8 @@ async fn get_laporan(req: HttpRequest, id: web::Path<Uuid>) -> impl Responder {
     };
 
     // token validation
-    let is_token_valid = auth::validate_jwt_token(authorize_token.to_string());
+    let token = "sample token";
+    let is_token_valid = auth::validate_jwt_token(token);
 
     if is_token_valid == true {
         let id_string = id.to_string();
@@ -50,7 +52,8 @@ async fn post_laporan(req: HttpRequest) -> impl Responder {
     };
 
     // token validation
-    let is_token_valid = auth::validate_jwt_token(authorize_token.to_string());
+    let token = "sample token";
+    let is_token_valid = auth::validate_jwt_token(token);
 
     if is_token_valid == true {
         HttpResponse::Ok().body("post v3 laporan")
@@ -68,7 +71,8 @@ async fn put_laporan(req: HttpRequest, id: web::Path<Uuid>) -> impl Responder {
     };
 
     // token validation
-    let is_token_valid = auth::validate_jwt_token(authorize_token.to_string());
+    let token = "sample token";
+    let is_token_valid = auth::validate_jwt_token(token);
 
     if is_token_valid == true {
         let id_string = id.to_string();
@@ -89,7 +93,8 @@ async fn delete_laporan(req: HttpRequest, id: web::Path<Uuid>) -> impl Responder
     };
 
     // token validation
-    let is_token_valid = auth::validate_jwt_token(authorize_token.to_string());
+    let token = "sample token";
+    let is_token_valid = auth::validate_jwt_token(token);
 
     if is_token_valid == true {
         let id_string = id.to_string();
