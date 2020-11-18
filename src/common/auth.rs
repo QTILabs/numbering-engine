@@ -52,7 +52,7 @@ impl AuthProcessor {
     pub(crate) fn init(host: &str, port: u16) -> AuthProcessor {
         // let redix = RedisProcessor::new(host, port)
         let redix = RedisProcessor {
-            redis_impl: Box::new(RedisMockProcessor),
+            redis_impl: Box::new(RedisMockProcessor::new(host, port)),
         };
         Self { redix }
     }

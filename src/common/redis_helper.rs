@@ -11,7 +11,10 @@ pub(crate) trait RedisImplem {
 pub(crate) struct RedisProcessor {
     pub(crate) redis_impl: Box<dyn RedisImplem>,
 }
-pub(crate) struct RedisMockProcessor;
+pub(crate) struct RedisMockProcessor {
+    redis_key: Vec<String>,
+    redis_jwt: Vec<String>,
+}
 pub(crate) struct RedisRealProcessor {
     redis_key: redis::Connection,
     redis_jwt: redis::Connection,
@@ -31,7 +34,6 @@ impl RedisImplem for RedisRealProcessor {
     }
     fn put_key(&mut self, the_redis_key: &str, the_key: &str) -> redis::RedisResult<String> {
         self.redis_key.set(the_redis_key, the_key)?;
-
         self.redis_key.get(the_redis_key)
     }
     //ToDO: delete token from redis
@@ -46,11 +48,19 @@ impl RedisImplem for RedisRealProcessor {
 }
 impl RedisImplem for RedisMockProcessor {
     fn find_key(&mut self, the_key: &str) -> redis::RedisResult<String> {
-        todo!()
+        let result = self.redis_key.iter().find(|&x| x == the_key);
+        if result != None {
+            return Ok(result.unwrap().into());
+        }
+        panic!("cant find key")
     }
 
     fn find_token(&mut self, thetoken: &str) -> redis::RedisResult<String> {
-        todo!()
+        let result = self.redis_jwt.iter().find(|&x| x == thetoken);
+        if result != None {
+            return Ok(result.unwrap().into());
+        }
+        panic!("cant find key")
     }
 
     fn put_key(&mut self, the_redis_key: &str, the_key: &str) -> redis::RedisResult<String> {
@@ -67,6 +77,13 @@ impl RedisImplem for RedisMockProcessor {
 
     fn delete_token(&mut self, the_redis_key: &str) -> redis::RedisResult<String> {
         todo!()
+    }
+}
+impl RedisMockProcessor {
+    pub(crate) fn new(hostname: &str, port: u16) -> Self {
+        let redis_key = vec![];
+        let redis_jwt = vec![];
+        Self { redis_key, redis_jwt }
     }
 }
 impl RedisRealProcessor {
