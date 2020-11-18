@@ -1,9 +1,12 @@
 use crate::common::AuthResult;
+use crate::common::{
+    jwt_auth::decode_from_jwt,
+    redis_helper::{RedisMockProcessor, RedisProcessor, RedisRealProcessor},
+};
+use actix_web::HttpRequest;
+use chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
 use redis::{cluster::ClusterClient, Client, Commands, Connection};
 use serde::{Deserialize, Serialize};
-use actix_web::{HttpRequest};
-use crate::common::{jwt_auth::decode_from_jwt, redis_helper::{RedisProcessor,RedisMockProcessor,RedisRealProcessor}};
-use chrono::{DateTime, FixedOffset, NaiveDateTime, Utc};
 
 //TODO had to delete the processor and replace it with getting connection
 pub(crate) struct AuthProcessor {
@@ -48,7 +51,7 @@ impl AuthProcessor {
     }
     pub(crate) fn init(host: &str, port: u16) -> AuthProcessor {
         // let redix = RedisProcessor::new(host, port)
-        let redix = RedisProcessor{
+        let redix = RedisProcessor {
             redis_impl: Box::new(RedisMockProcessor),
         };
         Self { redix }
