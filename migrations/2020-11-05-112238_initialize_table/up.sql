@@ -1,9 +1,17 @@
 -- Your SQL goes here
-CREATE TYPE Laporan_status AS ENUM (
-    'Draft',
-    'Terhapus',
-    'Terkirim & Belum Di Approve',
-    'Terkirim & Sudah Di Approve'
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TYPE LaporanStatus AS ENUM (
+    'draft',
+    'terhapus',
+    'terkirim_belum_diapprove',
+    'terkirim_sudah_diapprove'
+);
+
+CREATE TYPE ReferensiType AS ENUM (
+    'jenis_laporan',
+    'klasifikasi',
+    'urgensi'
 );
 
 CREATE TABLE public.attachment (
@@ -14,13 +22,14 @@ CREATE TABLE public.attachment (
 );
 
 CREATE TABLE public.laporan (
-    id uuid PRIMARY KEY,
-    created_date timestamp with time zone NOT NULL,
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    created_date timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_date timestamp with time zone,
     judul character varying(150) NOT NULL,
     nomor character varying(128),
+    urutan integer,
     isi text NOT NULL,
-    status Laporan_status NOT NULL,
+    status LaporanStatus NOT NULL,
     satker_id integer NOT NULL,
     klasifikasi_id integer NOT NULL,
     pelapor_id integer NOT NULL,
@@ -28,7 +37,7 @@ CREATE TABLE public.laporan (
     uploader_id integer NOT NULL,
     updated_by_id integer,
     jenis_id integer NOT NULL,
-    tanggal_laporan timestamp with time zone NOT NULL
+    tanggal_laporan timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE public.pelapor (
@@ -41,6 +50,7 @@ CREATE TABLE public.referensi (
     id serial PRIMARY KEY,
     nama character varying(64) NOT NULL,
     kode character varying(32) NOT NULL,
+    tipe ReferensiType NOT NULL,
     deskripsi text
 );
 

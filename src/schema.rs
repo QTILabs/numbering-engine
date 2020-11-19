@@ -10,12 +10,13 @@ table! {
 table! {
     laporan (id) {
         id -> Uuid,
-        created_date -> Timestamptz,
+        created_date -> Nullable<Timestamptz>,
         updated_date -> Nullable<Timestamptz>,
         judul -> Varchar,
         nomor -> Nullable<Varchar>,
+        urutan -> Nullable<Int4>,
         isi -> Text,
-        status -> Laporan_status,
+        status -> Laporanstatus,
         satker_id -> Int4,
         klasifikasi_id -> Int4,
         pelapor_id -> Int4,
@@ -23,7 +24,7 @@ table! {
         uploader_id -> Int4,
         updated_by_id -> Nullable<Int4>,
         jenis_id -> Int4,
-        tanggal_laporan -> Timestamptz,
+        tanggal_laporan -> Nullable<Timestamptz>,
     }
 }
 
@@ -40,6 +41,7 @@ table! {
         id -> Int4,
         nama -> Varchar,
         kode -> Varchar,
+        tipe -> Referensitype,
         deskripsi -> Nullable<Text>,
     }
 }
@@ -61,10 +63,6 @@ table! {
         password -> Varchar,
     }
 }
-
-joinable!(laporan -> pelapor (pelapor_id));
-joinable!(laporan -> satuan_kerja (satker_id));
-joinable!(pelapor -> satuan_kerja (satker_id));
 
 allow_tables_to_appear_in_same_query!(
     attachment,

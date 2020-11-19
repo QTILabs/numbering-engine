@@ -6,4 +6,5 @@ DROP TABLE IF EXISTS public.pelapor;
 DROP TABLE IF EXISTS public.referensi;
 DROP TABLE IF EXISTS public.satuan_kerja;
 DROP TABLE IF EXISTS public.user;
-DROP TYPE IF EXISTS Laporan_status;
+DROP TYPE IF EXISTS public.laporanstatus;
+DROP TYPE IF EXISTS public.referensitype;
