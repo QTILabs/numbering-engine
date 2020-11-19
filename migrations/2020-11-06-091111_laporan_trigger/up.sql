@@ -8,13 +8,14 @@ _year int := EXTRACT(
     YEAR
     FROM NEW.tanggal_laporan
 );
+_urutan int := sp_laporan_count_month(NEW.jenis_id, NEW.satker_id, _month, _year);
 BEGIN NEW.nomor := sp_laporan_get_nomor(
-    sp_laporan_count_month(NEW.jenis_id, NEW.satker_id, _month, _year),
-    NEW.jenis_id,
-    NEW.satker_id,
-    _month,
-    _year
+    _urutan,
+    sp_laporan_get_kode_satker(NEW.satker_id),
+    sp_laporan_get_kode_referensi(NEW.jenis_id),
+    NEW.tanggal_laporan
 );
+NEW.urutan := _urutan + 1;
 RETURN NEW;
 END $$ LANGUAGE plpgsql;
 
@@ -32,13 +33,14 @@ _year int := EXTRACT(
     YEAR
     FROM NEW.tanggal_laporan
 );
+_urutan int := sp_laporan_count_month(NEW.jenis_id, NEW.satker_id, _month, _year);
 BEGIN NEW.nomor := sp_laporan_get_nomor(
-    sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),
-    NEW.jenis_id,
-    NEW.satker_Id,
-    _month,
-    _year
+    _urutan,
+    sp_laporan_get_kode_satker(NEW.satker_id),
+    sp_laporan_get_kode_referensi(NEW.jenis_id),
+    NEW.tanggal_laporan
 );
+NEW.urutan := _urutan + 1;
 SELECT sp_laporan_sort_nomor(sp_laporan_get_nomor_position(NEW.jenis_id,NEW.satker_id,NEW.tanggal_laporan) + 1, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan);
 RETURN NEW;
 END $$ LANGUAGE plpgsql;
@@ -60,10 +62,9 @@ _year int := EXTRACT(
 );
 BEGIN NEW.nomor := sp_laporan_get_nomor(
     COALESCE(sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),sp_laporan_count_month(NEW.jenis_id, NEW.satker_id,_month,_year)),
-    NEW.jenis_id,
-    NEW.satker_id,
-    _month,
-    _year
+    sp_laporan_get_kode_satker(NEW.satker_id),
+    sp_laporan_get_kode_referensi(NEW.jenis_id),
+    NEW.tanggal_laporan
 );
 
 SELECT sp_laporan_sort_nomor(sp_laporan_get_nomor_position(NEW.jenis_id,NEW.satker_id,NEW.tanggal_laporan) + 1, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan);
