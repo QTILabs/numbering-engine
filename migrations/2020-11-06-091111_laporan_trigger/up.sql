@@ -85,7 +85,7 @@ _year int := EXTRACT(
     YEAR
     FROM NEW.tanggal_laporan
 );
-_urutan int := COALESCE(sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),sp_laporan_count_month(NEW.jenis_id, NEW.satker_id,_month,_year));
+_urutan int := COALESCE(sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),sp_laporan_count_month(NEW.jenis_id, NEW.satker_id,_month,_year) + 1);
 BEGIN 
 
 NEW.nomor := sp_laporan_get_nomor(
@@ -128,7 +128,7 @@ _year int := EXTRACT(
     YEAR
     FROM NEW.tanggal_laporan
 );
-_urutan int := COALESCE(sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),sp_laporan_count_month(NEW.jenis_id, NEW.satker_id,_month,_year));
+_urutan int := COALESCE(sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),sp_laporan_count_month(NEW.jenis_id, NEW.satker_id,_month,_year) + 1);
 BEGIN NEW.nomor := sp_laporan_get_nomor(
     _urutan - 1,
     sp_laporan_get_kode_satker(NEW.satker_id),
