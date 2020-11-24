@@ -170,3 +170,29 @@ END $$ LANGUAGE plpgsql;
 CREATE TRIGGER tr_laporan_edit_back_to_draft BEFORE
 UPDATE ON public.laporan FOR EACH ROW
     WHEN (NEW.status = 'draft') EXECUTE PROCEDURE public.sp_laporan_edit_back_to_draft();
+
+--- Trigger Edit Laporan Status to terhapus (soft delete laporan)
+CREATE OR REPLACE FUNCTION sp_laporan_delete() RETURNS trigger AS $$
+BEGIN 
+NEW.nomor := ''; -- NOMOR SET EMPTY
+NEW.urutan := 0; -- SET SEQUENCE TO 0
+PERFORM sp_laporan_sort_old_nomor(OLD.urutan - 1, OLD.jenis_id, OLD.satker_id, OLD.tanggal_laporan,OLD.id);
+RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_laporan_delete BEFORE
+UPDATE ON public.laporan FOR EACH ROW
+    WHEN (NEW.status = 'terhapus') EXECUTE PROCEDURE public.sp_laporan_delete();
+
+
+--- Trigger Delete Laporan (HARD DELETE laporan)
+CREATE OR REPLACE FUNCTION sp_laporan_hard_delete() RETURNS trigger AS $$
+BEGIN 
+PERFORM sp_laporan_sort_old_nomor(OLD.urutan - 1, OLD.jenis_id, OLD.satker_id, OLD.tanggal_laporan,OLD.id);
+RETURN OLD;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_laporan_hard_delete BEFORE
+DELETE ON public.laporan FOR EACH ROW
+   EXECUTE PROCEDURE public.sp_laporan_hard_delete();
+
