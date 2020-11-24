@@ -59,6 +59,14 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
+-- Get Last Draft Nomor
+CREATE OR REPLACE FUNCTION sp_laporan_get_last_draft_nomor(_id_jenis int, _id_satker int, _tanggal_laporan timestampTz)
+RETURNS INTEGER AS $$
+BEGIN
+	RETURN (SELECT urutan FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = EXTRACT(MONTH FROM _tanggal_laporan) AND EXTRACT(YEAR FROM tanggal_laporan) = EXTRACT(YEAR FROM _tanggal_laporan) AND tanggal_laporan <= _tanggal_laporan AND status = 'draft' ORDER BY tanggal_laporan DESC LIMIT 1);
+END
+$$ LANGUAGE plpgsql;
+
 -- Sort Nomor
 CREATE OR REPLACE FUNCTION sp_laporan_sort_nomor(num_count int, _id_jenis int, _id_satker int, _tanggal_laporan timestampTz)
 RETURNS void AS $$
