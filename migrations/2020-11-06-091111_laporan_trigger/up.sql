@@ -21,7 +21,32 @@ END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tr_laporan_insert BEFORE
 INSERT ON public.laporan FOR EACH ROW
-    WHEN (new.tanggal_laporan = CURRENT_TIMESTAMP) EXECUTE PROCEDURE public.sp_laporan_insert();
+    WHEN (NEW.tanggal_laporan = CURRENT_TIMESTAMP AND NEW.status = 'terkirim_sudah_diapprove') EXECUTE PROCEDURE public.sp_laporan_insert();
+
+-- Trigger before inserting draft laporan to assign nomor laporan
+CREATE OR REPLACE FUNCTION sp_laporan_insert_draft() RETURNS trigger AS $$
+DECLARE _month int := EXTRACT(
+        MONTH
+        FROM NEW.tanggal_laporan
+    );
+_year int := EXTRACT(
+    YEAR
+    FROM NEW.tanggal_laporan
+);
+_urutan int := sp_laporan_count_month_draft(NEW.jenis_id, NEW.satker_id, _month, _year);
+BEGIN NEW.nomor := sp_laporan_get_nomor_draft(
+    _urutan,
+    sp_laporan_get_kode_satker(NEW.satker_id),
+    sp_laporan_get_kode_referensi(NEW.jenis_id),
+    NEW.tanggal_laporan
+);
+NEW.urutan := _urutan + 1;
+RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_laporan_insert_draft BEFORE
+INSERT ON public.laporan FOR EACH ROW
+    WHEN (NEW.status = 'draft') EXECUTE PROCEDURE public.sp_laporan_insert_draft();
 
 --- Trigger before inserting laporan to assign nomor laporan, with backdate tanggal_laporan
 CREATE OR REPLACE FUNCTION sp_laporan_insert_backdate() RETURNS trigger AS $$
@@ -47,7 +72,7 @@ END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tr_laporan_insert_backdate BEFORE
 INSERT ON public.laporan FOR EACH ROW
-    WHEN (new.tanggal_laporan < CURRENT_TIMESTAMP) EXECUTE PROCEDURE public.sp_laporan_insert_backdate();
+    WHEN (new.tanggal_laporan < CURRENT_TIMESTAMP AND NEW.status = 'terkirim_sudah_diapprove') EXECUTE PROCEDURE public.sp_laporan_insert_backdate();
 
 -- Edit Laporan Trigger
 
@@ -79,7 +104,7 @@ END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tr_laporan_edit BEFORE
 UPDATE ON public.laporan FOR EACH ROW
-    WHEN (OLD.tanggal_laporan IS DISTINCT FROM NEW.tanggal_laporan OR OLD.jenis_id IS DISTINCT FROM NEW.jenis_id OR OLD.satker_id IS DISTINCT FROM NEW.satker_id) EXECUTE PROCEDURE public.sp_laporan_edit();
+    WHEN (OLD.tanggal_laporan IS DISTINCT FROM NEW.tanggal_laporan OR OLD.jenis_id IS DISTINCT FROM NEW.jenis_id OR OLD.satker_id IS DISTINCT FROM NEW.satker_id AND NEW.status = 'terkirim_sudah_diapprove') EXECUTE PROCEDURE public.sp_laporan_edit();
 
 --- Add or update updated_date when updating table
 
@@ -93,5 +118,30 @@ CREATE TRIGGER tr_laporan_edit_updated_date BEFORE
 UPDATE ON public.laporan FOR EACH ROW
    EXECUTE PROCEDURE public.sp_laporan_edit_updated_date();
 
+--- Trigger Edit Laporan Status Draft to Laporan Terkirim Terapprove
+CREATE OR REPLACE FUNCTION sp_laporan_edit_draft_status() RETURNS trigger AS $$
+DECLARE _month int := EXTRACT(
+        MONTH
+        FROM NEW.tanggal_laporan
+    );
+_year int := EXTRACT(
+    YEAR
+    FROM NEW.tanggal_laporan
+);
+_urutan int := COALESCE(sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),sp_laporan_count_month(NEW.jenis_id, NEW.satker_id,_month,_year));
+BEGIN NEW.nomor := sp_laporan_get_nomor(
+    _urutan,
+    sp_laporan_get_kode_satker(NEW.satker_id),
+    sp_laporan_get_kode_referensi(NEW.jenis_id),
+    NEW.tanggal_laporan
+);
+NEW.urutan := _urutan + 1;
+PERFORM sp_laporan_sort_nomor( _urutan + 1, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan);
+RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_laporan_edit_draft_status BEFORE
+UPDATE ON public.laporan FOR EACH ROW
+    WHEN (OLD.status = 'draft' AND NEW.status = 'terkirim_sudah_diapprove') EXECUTE PROCEDURE public.sp_laporan_edit_draft_status();
 
 	

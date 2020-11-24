@@ -17,6 +17,7 @@ CREATE OR REPLACE FUNCTION sp_laporan_count_month(
 				YEAR
 				FROM tanggal_laporan
 			) = _year
+			AND status = 'terkirim_sudah_diapprove'
 	);
 END $$ LANGUAGE plpgsql;
 
@@ -101,4 +102,41 @@ BEGIN
 	END LOOP;
 END
 $$ LANGUAGE plpgsql;
+
+-- Get Format Nomor Draft Laporan
+CREATE OR REPLACE FUNCTION sp_laporan_get_nomor_draft(
+		count_laporan int,
+		prefix_satker varchar,
+		prefix_jenis varchar,
+		tanggal_laporan timestampTz
+	) RETURNS VARCHAR AS $$ BEGIN RETURN (
+		SELECT right(
+				'DRAFT-' || '00000' || cast(count_laporan + 1 as varchar(5)),
+				5
+			) || '\' || prefix_jenis || '\' || prefix_satker || '\' || date_part('month',tanggal_laporan) || '\' || date_part('year',tanggal_laporan));
+END
+$$ LANGUAGE plpgsql;
+
+-- Counting Draft Laporan for Numbering
+CREATE OR REPLACE FUNCTION sp_laporan_count_month_draft(
+		_id_jenis int,
+		_id_satker int,
+		_month integer,
+		_year integer
+	) RETURNS INTEGER AS $$ BEGIN RETURN (
+		SELECT COUNT(*) AS count
+		FROM laporan
+		WHERE satker_id = _id_satker
+			AND jenis_id = _id_jenis
+			AND EXTRACT(
+				MONTH
+				FROM tanggal_laporan
+			) = _month
+			AND EXTRACT(
+				YEAR
+				FROM tanggal_laporan
+			) = _year
+			AND status = 'draft'
+	);
+END $$ LANGUAGE plpgsql;
 
