@@ -54,19 +54,51 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION sp_laporan_get_nomor_position(_id_jenis int, _id_satker int, _tanggal_laporan timestampTz)
 RETURNS INTEGER AS $$
 BEGIN
-	RETURN (SELECT urutan FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = EXTRACT(MONTH FROM _tanggal_laporan) AND EXTRACT(YEAR FROM tanggal_laporan) = EXTRACT(YEAR FROM _tanggal_laporan) AND tanggal_laporan >= _tanggal_laporan ORDER BY tanggal_laporan ASC);
+	RETURN (SELECT urutan FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = EXTRACT(MONTH FROM _tanggal_laporan) AND EXTRACT(YEAR FROM tanggal_laporan) = EXTRACT(YEAR FROM _tanggal_laporan) AND tanggal_laporan >= _tanggal_laporan ORDER BY tanggal_laporan ASC LIMIT 1);
 END
 $$ LANGUAGE plpgsql;
 
 -- Sort Nomor
 CREATE OR REPLACE FUNCTION sp_laporan_sort_nomor(num_count int, _id_jenis int, _id_satker int, _tanggal_laporan timestampTz)
-RETURNS RECORD AS $$
+RETURNS void AS $$
 DECLARE	
 	data_laporan record;
+	_urutan int;
 BEGIN
-	FOR data_laporan IN SELECT * FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = EXTRACT(MONTH FROM _tanggal_laporan) AND EXTRACT(YEAR FROM tanggal_laporan) = EXTRACT(YEAR FROM _tanggal_laporan) AND tanggal_laporan > _tanggal_laporan ORDER BY tanggal_laporan ASC LOOP
+	FOR data_laporan IN SELECT * FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = EXTRACT(MONTH FROM _tanggal_laporan) AND EXTRACT(YEAR FROM tanggal_laporan) = EXTRACT(YEAR FROM _tanggal_laporan) AND tanggal_laporan >= _tanggal_laporan ORDER BY tanggal_laporan ASC LOOP
+		_urutan := num_count + 1;
+		UPDATE laporan SET nomor = sp_laporan_get_nomor(num_count,sp_laporan_get_kode_satker(_id_satker),sp_laporan_get_kode_referensi(_id_jenis),data_laporan.tanggal_laporan), urutan = _urutan WHERE id = data_laporan.id;
+		num_count := _urutan;
+	END LOOP;
+END
+$$ LANGUAGE plpgsql;
+
+--- Sort Old Nomor With Exception from old id (so newly updated laporan wont be updated)
+CREATE OR REPLACE FUNCTION sp_laporan_sort_old_nomor(num_count int, _id_jenis int, _id_satker int, _tanggal_laporan timestampTz, old_id uuid)
+RETURNS void AS $$
+DECLARE	
+	data_laporan record;
+	_urutan int;
+BEGIN
+	FOR data_laporan IN SELECT * FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = EXTRACT(MONTH FROM _tanggal_laporan) AND EXTRACT(YEAR FROM tanggal_laporan) = EXTRACT(YEAR FROM _tanggal_laporan) AND tanggal_laporan >= _tanggal_laporan AND id != old_id ORDER BY tanggal_laporan ASC LOOP
+		_urutan := num_count + 1;
+		UPDATE laporan SET nomor = sp_laporan_get_nomor(num_count,sp_laporan_get_kode_satker(_id_satker),sp_laporan_get_kode_referensi(_id_jenis),data_laporan.tanggal_laporan), urutan = _urutan WHERE id = data_laporan.id;
+		num_count := _urutan;
+	END LOOP;
+END
+$$ LANGUAGE plpgsql;
+
+--- Re-sorting Nomor Laporan
+CREATE OR REPLACE FUNCTION sp_laporan_re_sort_nomor(_id_jenis int, _id_satker int, _month int, _year int)
+RETURNS void AS $$
+DECLARE	
+	data_laporan record;
+	num_count int := 0;
+BEGIN
+	FOR data_laporan IN SELECT * FROM laporan WHERE satker_id = _id_satker AND jenis_id = _id_jenis AND EXTRACT(MONTH FROM tanggal_laporan) = _month AND EXTRACT(YEAR FROM tanggal_laporan) = _year ORDER BY tanggal_laporan ASC LOOP
 		UPDATE laporan SET nomor = sp_laporan_get_nomor(num_count,sp_laporan_get_kode_satker(_id_satker),sp_laporan_get_kode_referensi(_id_jenis),data_laporan.tanggal_laporan), urutan = num_count + 1 WHERE id = data_laporan.id;
 		num_count := num_count + 1;
 	END LOOP;
 END
 $$ LANGUAGE plpgsql;
+

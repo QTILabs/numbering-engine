@@ -24,3 +24,5 @@ DROP FUNCTION IF EXISTS sp_laporan_sort_nomor(
     _id_satker int,
     _tanggal_laporan timestampTz
 );
+
+DROP FUNCTION IF EXISTS sp_laporan_re_sort_nomor(_id_jenis int, _id_satker int, _tanggal_laporan timestampTz);

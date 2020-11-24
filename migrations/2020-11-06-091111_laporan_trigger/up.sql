@@ -33,7 +33,7 @@ _year int := EXTRACT(
     YEAR
     FROM NEW.tanggal_laporan
 );
-_urutan int := sp_laporan_count_month(NEW.jenis_id, NEW.satker_id, _month, _year);
+_urutan int := sp_laporan_get_nomor_position(NEW.jenis_id,NEW.satker_id,NEW.tanggal_laporan);
 BEGIN NEW.nomor := sp_laporan_get_nomor(
     _urutan,
     sp_laporan_get_kode_satker(NEW.satker_id),
@@ -41,7 +41,7 @@ BEGIN NEW.nomor := sp_laporan_get_nomor(
     NEW.tanggal_laporan
 );
 NEW.urutan := _urutan + 1;
-SELECT sp_laporan_sort_nomor(sp_laporan_get_nomor_position(NEW.jenis_id,NEW.satker_id,NEW.tanggal_laporan) + 1, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan);
+PERFORM sp_laporan_sort_nomor( _urutan + 1, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan);
 RETURN NEW;
 END $$ LANGUAGE plpgsql;
 
@@ -60,19 +60,38 @@ _year int := EXTRACT(
     YEAR
     FROM NEW.tanggal_laporan
 );
-BEGIN NEW.nomor := sp_laporan_get_nomor(
-    COALESCE(sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),sp_laporan_count_month(NEW.jenis_id, NEW.satker_id,_month,_year)),
+_urutan int := COALESCE(sp_laporan_get_nomor_position(NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan),sp_laporan_count_month(NEW.jenis_id, NEW.satker_id,_month,_year));
+BEGIN 
+
+NEW.nomor := sp_laporan_get_nomor(
+    _urutan,
     sp_laporan_get_kode_satker(NEW.satker_id),
     sp_laporan_get_kode_referensi(NEW.jenis_id),
     NEW.tanggal_laporan
 );
+NEW.urutan := _urutan + 1;
 
-SELECT sp_laporan_sort_nomor(sp_laporan_get_nomor_position(NEW.jenis_id,NEW.satker_id,NEW.tanggal_laporan) + 1, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan);
-SELECT sp_laporan_sort_nomor(sp_laporan_get_nomor_position(OLD.jenis_id,OLD.satker_id,OLD.tanggal_laporan), OLD.jenis_id, OLD.satker_id, OLD.tanggal_laporan);
+PERFORM sp_laporan_sort_nomor(_urutan + 1, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan);
+PERFORM sp_laporan_sort_old_nomor(OLD.urutan - 1, OLD.jenis_id, OLD.satker_id, OLD.tanggal_laporan,OLD.id);
+
 RETURN NEW;
 END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tr_laporan_edit BEFORE
 UPDATE ON public.laporan FOR EACH ROW
     WHEN (OLD.tanggal_laporan IS DISTINCT FROM NEW.tanggal_laporan OR OLD.jenis_id IS DISTINCT FROM NEW.jenis_id OR OLD.satker_id IS DISTINCT FROM NEW.satker_id) EXECUTE PROCEDURE public.sp_laporan_edit();
+
+--- Add or update updated_date when updating table
+
+CREATE OR REPLACE FUNCTION sp_laporan_edit_updated_date() RETURNS trigger AS $$
+BEGIN
+    NEW.updated_date := CURRENT_TIMESTAMP;
+    RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_laporan_edit_updated_date BEFORE
+UPDATE ON public.laporan FOR EACH ROW
+   EXECUTE PROCEDURE public.sp_laporan_edit_updated_date();
+
+
 	
