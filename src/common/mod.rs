@@ -28,6 +28,15 @@ where
     }
 }
 
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub(crate) enum AuthResultJwt {
+    Ok(jwt_auth::Claims),
+    NotAuthenticated,
+    TokenInvalid,
+    TokenExpired,
+    ForbiddenAccess,
+}
+
 #[derive(Deserialize, Serialize, Clone, Debug, Ord, PartialOrd, Eq, PartialEq)]
 pub(crate) enum AuthResult {
     Ok,

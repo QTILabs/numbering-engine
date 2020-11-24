@@ -1,23 +1,29 @@
 use crate::common::auth;
+use crate::common::jwt_auth;
+use crate::common::AuthResultJwt;
 use actix_web::{delete, get, post, put, web, HttpRequest, HttpResponse, Responder};
+use jwt_auth::decode_jwt;
 use uuid::Uuid;
 
 #[get("/v3/laporan/")]
 async fn get_all_laporan(req: HttpRequest) -> impl Responder {
     // get jwt token from header Authorization
     let authorize_token = match auth::get_header_value(&req, "Authorization") {
-        Some(token) => token,
-        None => "",
+        Some(token) => Some(token.to_string()),
+        None => None,
     };
 
     // token validation
-    let token = "sample token";
-    let is_token_valid = auth::validate_jwt_token(token);
-
-    if is_token_valid == true {
-        HttpResponse::Ok().body("get all v3 laporan")
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    let verified_token = decode_jwt(authorize_token);
+    match verified_token {
+        AuthResultJwt::Ok(claims) => {
+            println!("{:?}", claims);
+            return HttpResponse::Ok().body("get all v3 laporan");
+        }
+        AuthResultJwt::NotAuthenticated => return HttpResponse::Unauthorized().body("Not Authenticated"),
+        AuthResultJwt::TokenInvalid => return HttpResponse::Unauthorized().body("Token Invalid"),
+        AuthResultJwt::TokenExpired => return HttpResponse::Unauthorized().body("Token Expired"),
+        _ => return HttpResponse::InternalServerError().body("Internal server error"),
     }
 }
 
@@ -25,21 +31,21 @@ async fn get_all_laporan(req: HttpRequest) -> impl Responder {
 async fn get_laporan(req: HttpRequest, id: web::Path<Uuid>) -> impl Responder {
     // get jwt token from header Authorization
     let authorize_token = match auth::get_header_value(&req, "Authorization") {
-        Some(token) => token,
-        None => "",
+        Some(token) => Some(token.to_string()),
+        None => None,
     };
 
     // token validation
-    let token = "sample token";
-    let is_token_valid = auth::validate_jwt_token(token);
-
-    if is_token_valid == true {
-        let id_string = id.to_string();
-        let mut message = "get v3 laporan id: ".to_string();
-        message.push_str(&id_string);
-        HttpResponse::Ok().body(message)
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    let verified_token = decode_jwt(authorize_token);
+    match verified_token {
+        AuthResultJwt::Ok(claims) => {
+            println!("{:?}", claims);
+            return HttpResponse::Ok().body(format!("get v3 laporan id {}", id));
+        }
+        AuthResultJwt::NotAuthenticated => return HttpResponse::Unauthorized().body("Not Authenticated"),
+        AuthResultJwt::TokenInvalid => return HttpResponse::Unauthorized().body("Token Invalid"),
+        AuthResultJwt::TokenExpired => return HttpResponse::Unauthorized().body("Token Expired"),
+        _ => return HttpResponse::InternalServerError().body("Internal server error"),
     }
 }
 
@@ -47,18 +53,21 @@ async fn get_laporan(req: HttpRequest, id: web::Path<Uuid>) -> impl Responder {
 async fn post_laporan(req: HttpRequest) -> impl Responder {
     // get jwt token from header Authorization
     let authorize_token = match auth::get_header_value(&req, "Authorization") {
-        Some(token) => token,
-        None => "",
+        Some(token) => Some(token.to_string()),
+        None => None,
     };
 
     // token validation
-    let token = "sample token";
-    let is_token_valid = auth::validate_jwt_token(token);
-
-    if is_token_valid == true {
-        HttpResponse::Ok().body("post v3 laporan")
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    let verified_token = decode_jwt(authorize_token);
+    match verified_token {
+        AuthResultJwt::Ok(claims) => {
+            println!("{:?}", claims);
+            return HttpResponse::Ok().body("post v3 laporan");
+        }
+        AuthResultJwt::NotAuthenticated => return HttpResponse::Unauthorized().body("Not Authenticated"),
+        AuthResultJwt::TokenInvalid => return HttpResponse::Unauthorized().body("Token Invalid"),
+        AuthResultJwt::TokenExpired => return HttpResponse::Unauthorized().body("Token Expired"),
+        _ => return HttpResponse::InternalServerError().body("Internal server error"),
     }
 }
 
@@ -66,21 +75,21 @@ async fn post_laporan(req: HttpRequest) -> impl Responder {
 async fn put_laporan(req: HttpRequest, id: web::Path<Uuid>) -> impl Responder {
     // get jwt token from header Authorization
     let authorize_token = match auth::get_header_value(&req, "Authorization") {
-        Some(token) => token,
-        None => "",
+        Some(token) => Some(token.to_string()),
+        None => None,
     };
 
     // token validation
-    let token = "sample token";
-    let is_token_valid = auth::validate_jwt_token(token);
-
-    if is_token_valid == true {
-        let id_string = id.to_string();
-        let mut message = "put v3 laporan id: ".to_string();
-        message.push_str(&id_string);
-        HttpResponse::Ok().body(message)
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    let verified_token = decode_jwt(authorize_token);
+    match verified_token {
+        AuthResultJwt::Ok(claims) => {
+            println!("{:?}", claims);
+            return HttpResponse::Ok().body(format!("put v3 laporan id {}", id));
+        }
+        AuthResultJwt::NotAuthenticated => return HttpResponse::Unauthorized().body("Not Authenticated"),
+        AuthResultJwt::TokenInvalid => return HttpResponse::Unauthorized().body("Token Invalid"),
+        AuthResultJwt::TokenExpired => return HttpResponse::Unauthorized().body("Token Expired"),
+        _ => return HttpResponse::InternalServerError().body("Internal server error"),
     }
 }
 
@@ -88,21 +97,21 @@ async fn put_laporan(req: HttpRequest, id: web::Path<Uuid>) -> impl Responder {
 async fn delete_laporan(req: HttpRequest, id: web::Path<Uuid>) -> impl Responder {
     // get jwt token from header Authorization
     let authorize_token = match auth::get_header_value(&req, "Authorization") {
-        Some(token) => token,
-        None => "",
+        Some(token) => Some(token.to_string()),
+        None => None,
     };
 
     // token validation
-    let token = "sample token";
-    let is_token_valid = auth::validate_jwt_token(token);
-
-    if is_token_valid == true {
-        let id_string = id.to_string();
-        let mut message = "delete v3 laporan id: ".to_string();
-        message.push_str(&id_string);
-        HttpResponse::Ok().body(message)
-    } else {
-        HttpResponse::Unauthorized().body("unauthorized")
+    let verified_token = decode_jwt(authorize_token);
+    match verified_token {
+        AuthResultJwt::Ok(claims) => {
+            println!("{:?}", claims);
+            return HttpResponse::Ok().body(format!("delete v3 laporan id {}", id));
+        }
+        AuthResultJwt::NotAuthenticated => return HttpResponse::Unauthorized().body("Not Authenticated"),
+        AuthResultJwt::TokenInvalid => return HttpResponse::Unauthorized().body("Token Invalid"),
+        AuthResultJwt::TokenExpired => return HttpResponse::Unauthorized().body("Token Expired"),
+        _ => return HttpResponse::InternalServerError().body("Internal server error"),
     }
 }
 
