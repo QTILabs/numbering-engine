@@ -110,8 +110,8 @@ CREATE OR REPLACE FUNCTION sp_laporan_get_nomor_draft(
 		prefix_jenis varchar,
 		tanggal_laporan timestampTz
 	) RETURNS VARCHAR AS $$ BEGIN RETURN (
-		SELECT right(
-				'DRAFT-' || '00000' || cast(count_laporan + 1 as varchar(5)),
+		SELECT 'DRAFT-' || right(
+				'00000' || cast(count_laporan + 1 as varchar(5)),
 				5
 			) || '\' || prefix_jenis || '\' || prefix_satker || '\' || date_part('month',tanggal_laporan) || '\' || date_part('year',tanggal_laporan));
 END
