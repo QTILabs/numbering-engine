@@ -182,7 +182,7 @@ END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tr_laporan_delete BEFORE
 UPDATE ON public.laporan FOR EACH ROW
-    WHEN (NEW.status = 'terhapus') EXECUTE PROCEDURE public.sp_laporan_delete();
+    WHEN (NEW.status = 'terhapus' AND OLD.status = 'terkirim_sudah_diapprove') EXECUTE PROCEDURE public.sp_laporan_delete();
 
 
 --- Trigger Delete Laporan (HARD DELETE laporan)
@@ -194,5 +194,5 @@ END $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tr_laporan_hard_delete BEFORE
 DELETE ON public.laporan FOR EACH ROW
-   EXECUTE PROCEDURE public.sp_laporan_hard_delete();
+   WHEN (OLD.status = 'terkirim_sudah_diapprove') EXECUTE PROCEDURE public.sp_laporan_hard_delete();
 
