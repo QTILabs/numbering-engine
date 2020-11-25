@@ -96,7 +96,7 @@ NEW.nomor := sp_laporan_get_nomor(
 );
 NEW.urutan := _urutan;
 
-PERFORM sp_laporan_sort_nomor(_urutan, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan);
+PERFORM sp_laporan_sort_old_nomor(_urutan, NEW.jenis_id, NEW.satker_id, NEW.tanggal_laporan,OLD.id);
 PERFORM sp_laporan_sort_old_nomor(OLD.urutan - 1, OLD.jenis_id, OLD.satker_id, OLD.tanggal_laporan,OLD.id);
 
 RETURN NEW;
