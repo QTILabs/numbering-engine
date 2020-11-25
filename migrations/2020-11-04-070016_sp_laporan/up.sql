@@ -148,3 +148,28 @@ CREATE OR REPLACE FUNCTION sp_laporan_count_month_draft(
 	);
 END $$ LANGUAGE plpgsql;
 
+-- Counting Laporan for Numbering With Exception from Old.id for edit laporan trigger
+CREATE OR REPLACE FUNCTION sp_laporan_count_month_edit(
+		_id_jenis int,
+		_id_satker int,
+		_month integer,
+		_year integer,
+		old_id uuid
+	) RETURNS INTEGER AS $$ BEGIN RETURN (
+		SELECT COUNT(*) AS count
+		FROM laporan
+		WHERE satker_id = _id_satker
+			AND jenis_id = _id_jenis
+			AND EXTRACT(
+				MONTH
+				FROM tanggal_laporan
+			) = _month
+			AND EXTRACT(
+				YEAR
+				FROM tanggal_laporan
+			) = _year
+			AND status = 'terkirim_sudah_diapprove' 
+			AND id != old_id
+	);
+END $$ LANGUAGE plpgsql;
+

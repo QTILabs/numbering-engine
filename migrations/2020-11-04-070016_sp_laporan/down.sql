@@ -41,3 +41,11 @@ DROP FUNCTION IF EXISTS sp_laporan_get_nomor_draft(
     tanggal_laporan timestampTz
 );
 
+DROP FUNCTION IF EXISTS sp_laporan_count_month_edit(
+    _id_jenis int,
+    _id_satker int,
+    _month integer,
+	_year integer,
+    old_id uuid
+);
+
